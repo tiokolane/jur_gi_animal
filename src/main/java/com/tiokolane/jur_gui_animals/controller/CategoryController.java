@@ -24,7 +24,7 @@ import com.tiokolane.jur_gui_animals.repository.CategoryRepository;
 @RestController
 @RequestMapping("/api")
 public class CategoryController {
-    @Autowired
+  @Autowired
   CategoryRepository categoryRepository;
 
   @GetMapping("/categories")

@@ -1,21 +1,35 @@
 package com.tiokolane.jur_gui_animals.model;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
-@Data
+@Setter
+
+@Getter
+
 @AllArgsConstructor
+
 @NoArgsConstructor
+
+@ToString
+
 @Entity
 @Table(name = "categories")
 public class Category {
-    public Category(String name2, String description2, boolean b) {
-    }
+    
 
     @Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,4 +43,8 @@ public class Category {
 
     @Column(name = "published")
 	private boolean published;
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "category")
+    @JsonManagedReference
+    private List<Picture> pictures;
 }

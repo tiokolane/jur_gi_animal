@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,6 +27,7 @@ import com.tiokolane.jur_gui_animals.exception.ResponseMessage;
 import com.tiokolane.jur_gui_animals.model.Category;
 import com.tiokolane.jur_gui_animals.model.FileInfo;
 import com.tiokolane.jur_gui_animals.model.Picture;
+import com.tiokolane.jur_gui_animals.payload.FileUploadDto;
 import com.tiokolane.jur_gui_animals.repository.CategoryRepository;
 import com.tiokolane.jur_gui_animals.repository.PictureRepository;
 import com.tiokolane.jur_gui_animals.service.FilesStorageService;
@@ -43,7 +45,7 @@ public class FilesController {
     PictureRepository pictureRepository;
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(required = false) Integer category_id) {
         String message = "";
         try {
             Resource file_saved =  storageService.save(file);
@@ -52,7 +54,7 @@ public class FilesController {
                     .fromMethodName(FilesController.class, "getFile", file_saved.getFilename().toString()).build()
                     .toString();
             Picture picture = new Picture();
-            Category category = categoryRepository.getById((long) 1);
+            Category category = categoryRepository.getById((long) category_id);
             picture.setCategory(category);
             picture.setUrl(url);
             pictureRepository.save(picture);

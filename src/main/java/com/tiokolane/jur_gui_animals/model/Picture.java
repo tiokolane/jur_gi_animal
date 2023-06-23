@@ -41,4 +41,14 @@ public class Picture {
     @JoinColumn(name = "race_id",nullable=true, referencedColumnName = "id")
     @JsonBackReference
     private Race race;
+
+    @ManyToOne
+    @JoinColumn(name = "animal_id",nullable=true, referencedColumnName = "id")
+    @JsonBackReference
+    private Animal animal;
+
+    @ManyToOne
+    @JoinColumn(name = "mariage_id",nullable=true, referencedColumnName = "id")
+    @JsonBackReference
+    private Mariage mariage;
 }

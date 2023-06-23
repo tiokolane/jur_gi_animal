@@ -24,12 +24,16 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.tiokolane.jur_gui_animals.exception.ResponseMessage;
+import com.tiokolane.jur_gui_animals.model.Animal;
 import com.tiokolane.jur_gui_animals.model.Category;
 import com.tiokolane.jur_gui_animals.model.FileInfo;
+import com.tiokolane.jur_gui_animals.model.Mariage;
 import com.tiokolane.jur_gui_animals.model.Picture;
 import com.tiokolane.jur_gui_animals.model.Race;
 import com.tiokolane.jur_gui_animals.payload.FileUploadDto;
+import com.tiokolane.jur_gui_animals.repository.AnimalRepository;
 import com.tiokolane.jur_gui_animals.repository.CategoryRepository;
+import com.tiokolane.jur_gui_animals.repository.MariageRepository;
 import com.tiokolane.jur_gui_animals.repository.PictureRepository;
 import com.tiokolane.jur_gui_animals.repository.RaceRepository;
 import com.tiokolane.jur_gui_animals.service.FilesStorageService;
@@ -47,10 +51,15 @@ public class FilesController {
     RaceRepository raceRepository;
     @Autowired
     PictureRepository pictureRepository;
+    @Autowired
+    AnimalRepository animalRepository;
+    @Autowired
+    MariageRepository mariageRepository;
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file,
-            @RequestParam(required = false) Integer category_id, @RequestParam(required = false) Integer race_id) {
+            @RequestParam(required = false) Integer category_id, @RequestParam(required = false) Integer race_id,
+            @RequestParam(required = false) Integer animal_id, @RequestParam(required = false) Integer mariage_id) {
         String message = "";
         try {
             Resource file_saved = storageService.save(file);
@@ -78,6 +87,26 @@ public class FilesController {
                 pictures.add(picture);
                 race.setPictures(pictures);
                 raceRepository.save(race);
+            }
+            if (animal_id != null) {
+                Animal animal = animalRepository.getById((long) animal_id);
+                picture.setAnimal(animal);
+                picture.setUrl(url);
+                pictureRepository.save(picture);
+                List<Picture> pictures = animal.getPictures();
+                pictures.add(picture);
+                animal.setPictures(pictures);
+                animalRepository.save(animal);
+            }
+            if (mariage_id != null) {
+                Mariage mariage = mariageRepository.getById((long) mariage_id);
+                picture.setMariage(mariage);
+                picture.setUrl(url);
+                pictureRepository.save(picture);
+                List<Picture> pictures = mariage.getPictures();
+                pictures.add(picture);
+                mariage.setPictures(pictures);
+                mariageRepository.save(mariage);
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));

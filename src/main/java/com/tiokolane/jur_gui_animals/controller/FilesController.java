@@ -27,9 +27,11 @@ import com.tiokolane.jur_gui_animals.exception.ResponseMessage;
 import com.tiokolane.jur_gui_animals.model.Category;
 import com.tiokolane.jur_gui_animals.model.FileInfo;
 import com.tiokolane.jur_gui_animals.model.Picture;
+import com.tiokolane.jur_gui_animals.model.Race;
 import com.tiokolane.jur_gui_animals.payload.FileUploadDto;
 import com.tiokolane.jur_gui_animals.repository.CategoryRepository;
 import com.tiokolane.jur_gui_animals.repository.PictureRepository;
+import com.tiokolane.jur_gui_animals.repository.RaceRepository;
 import com.tiokolane.jur_gui_animals.service.FilesStorageService;
 
 import lombok.val;
@@ -42,26 +44,42 @@ public class FilesController {
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
+    RaceRepository raceRepository;
+    @Autowired
     PictureRepository pictureRepository;
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(required = false) Integer category_id) {
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file,
+            @RequestParam(required = false) Integer category_id, @RequestParam(required = false) Integer race_id) {
         String message = "";
         try {
-            Resource file_saved =  storageService.save(file);
+            Resource file_saved = storageService.save(file);
             message = "Uploaded the file successfully: " + file_saved.getFilename();
             String url = MvcUriComponentsBuilder
                     .fromMethodName(FilesController.class, "getFile", file_saved.getFilename().toString()).build()
                     .toString();
             Picture picture = new Picture();
-            Category category = categoryRepository.getById((long) category_id);
-            picture.setCategory(category);
-            picture.setUrl(url);
-            pictureRepository.save(picture);
-            List<Picture> pictures = category.getPictures();
-            pictures.add(picture);
-            category.setPictures(pictures);
-            categoryRepository.save(category);
+            if (category_id != null) {
+                Category category = categoryRepository.getById((long) category_id);
+                picture.setCategory(category);
+                picture.setUrl(url);
+                pictureRepository.save(picture);
+                List<Picture> pictures = category.getPictures();
+                pictures.add(picture);
+                category.setPictures(pictures);
+                categoryRepository.save(category);
+            }
+            if (race_id != null) {
+                Race race = raceRepository.getById((long) race_id);
+                picture.setRace(race);
+                picture.setUrl(url);
+                pictureRepository.save(picture);
+                List<Picture> pictures = race.getPictures();
+                pictures.add(picture);
+                race.setPictures(pictures);
+                raceRepository.save(race);
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
         } catch (Exception e) {
             message = "Could not upload the file: " + file.getOriginalFilename() + ". Error: " + e.getMessage();

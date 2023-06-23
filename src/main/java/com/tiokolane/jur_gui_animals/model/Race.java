@@ -23,12 +23,13 @@ import lombok.ToString;
 @ToString
 
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "races")
+public class Race {
     
 
     @Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+    @PrimaryKeyJoinColumn
 	private long id;
 
 	@Column(name = "name")
@@ -40,11 +41,13 @@ public class Category {
     @Column(name = "published")
 	private boolean published;
 
-	// @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "category")
-    // @JsonManagedReference
-    // private List<Race> races;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinTable(name = "category_race",
+             joinColumns = @JoinColumn(name = "race_id"),
+             inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private Category category;
     
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "category")
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "race")
     @JsonManagedReference
     private List<Picture> pictures;
 }

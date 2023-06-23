@@ -36,4 +36,9 @@ public class Picture {
     @JoinColumn(name = "category_id",nullable=true)
     @JsonBackReference
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "race_id",nullable=true, referencedColumnName = "id")
+    @JsonBackReference
+    private Race race;
 }
